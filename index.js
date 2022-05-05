@@ -6,6 +6,17 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
 const port = process.env.PORT || 5000
 const app = express();
+app.use(cors());
+app.use(express.json());
+function verifyJWT (req,res, next ){
+    const headerAuth =req.headers.authorization;
+    if(!headerAuth){
+        return res.status(401).send({messege:"unauthorized access"})
+    }
+    console.log('inside verifyJWT', headerAuth);
+    next();
+}
+
 
 
 
@@ -52,7 +63,7 @@ async function run() {
         })
 
         // Order collection api...
-        app.get('/order', async (req, res) => {
+        app.get('/order', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
             const cursor = orderCollection.find(query);
@@ -110,8 +121,7 @@ run().catch(console.dir)
 
 
 // middleware
-app.use(cors());
-app.use(express.json());
+
 
 app.get('/', (req, res) => {
     res.send("fdff")
