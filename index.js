@@ -13,7 +13,9 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run(){
     try{
         await client.connect();
-        const productCollection =client.db("perfumeWareHouse").collection("perfumeCollection")
+        const productCollection =client.db("perfumeWareHouse").collection
+        ("perfumeCollection");
+        const orderCollection = client.db("perfumeWareHouse").collection("order");
        app.get('/product', async(req,res)=>{
         const query ={};
         const cursor = productCollection.find(query);
@@ -33,12 +35,35 @@ async function run(){
            res.send(result);
        })
     //    DELETE
-    app.delete('product/:id', async(req,res)=>{
+    app.delete('/product/:id', async(req,res)=>{
         const id =req.params.id;
         const query ={_id: ObjectId(id)};
         const result = await productCollection.deleteOne(query);
         res.send(result);
     })
+
+    // Order collection api...
+    app.post('/order', async (req,res)=>{
+        const order = req.body;
+        const result =await orderCollection.insertOne(order);
+        res.send(result)
+
+    })
+    // app.put('/product/:id', async(req,res)=>{
+    //     const id =req.params.id;
+    //     const updateProduct = req.body;
+    //     const filter = {_id:ObjectId(id)};
+    //     const option={upsert:true};
+    //     const updateDoc={
+    //         $set:{
+    //             name:updateProduct.name
+    //         }
+
+    //     };
+    //     const result = await productCollection.updateOne(filter, updateDoc,option);
+    //     res.send(result);
+
+    // })
 
 
     }finally{
