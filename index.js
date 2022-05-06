@@ -111,6 +111,9 @@ async function run() {
             const product = await productCollection.findOne({_id: ObjectId(id)});
             console.log(product);
             if(product){
+                if(product.qty == null){
+                    product.qty =0 ;
+                }
                 const qty =parseInt(product.qty) + parseInt(quantity);
                 const result = await productCollection.updateOne({ _id: ObjectId(id) }, { $set: { qty: qty } });
                 res.send(result)
