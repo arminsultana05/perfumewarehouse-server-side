@@ -106,11 +106,14 @@ async function run() {
         })
         app.put('/api/product/stock/:id', async(req,res)=>{
             const id =req.params.id;
-            const quantity = req.params.qty;
+            const quantity = req.body.qty.qty;
+            console.log( quantity);
             const product = await productCollection.findOne({_id: ObjectId(id)});
+            console.log(product);
             if(product){
                 const qty =parseInt(product.qty) + parseInt(quantity);
-                res.send(qty)
+                const result = await productCollection.updateOne({ _id: ObjectId(id) }, { $set: { qty: qty } });
+                res.send(result)
             }
 
         
