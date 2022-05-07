@@ -8,15 +8,15 @@ const port = process.env.PORT || 5000
 const app = express();
 app.use(cors());
 app.use(express.json());
-function verifyJWT (req,res, next ){
-    const headerAuth =req.headers.authorization;
-    if(!headerAuth){
-        return res.status(401).send({messege:"unauthorized access"})
+function verifyJWT(req, res, next) {
+    const headerAuth = req.headers.authorization;
+    if (!headerAuth) {
+        return res.status(401).send({ messege: "unauthorized access" })
     }
     const token = headerAuth.split(' ')[1];
-    jwt.verify(token,process.env.ACCESS_TOKEN, (err, decoded)=>{
-        if(err){
-            return res.status(403).send({messege:'Forbidden access'});
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+        if (err) {
+            return res.status(403).send({ messege: 'Forbidden access' });
 
         }
         console.log('decoded', decoded);
@@ -24,10 +24,6 @@ function verifyJWT (req,res, next ){
     // console.log('inside verifyJWT', headerAuth);
     next();
 }
-
-
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.0ib4x.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 async function run() {
@@ -69,7 +65,7 @@ async function run() {
             const result = await productCollection.deleteOne(query);
             res.send(result);
         })
-
+        // verifyJWT,
         // Order collection api...
         app.get('/order', verifyJWT, async (req, res) => {
             // const decodedEmail = req.decoded.email;
@@ -91,8 +87,6 @@ async function run() {
             const result = await orderCollection.deleteOne(query);
             res.send(result);
         })
-        
-
         app.put('/product/update/:id', async (req, res) => {
             const id = req.params.id;
             const product = await productCollection.findOne({ _id: ObjectId(id) })
@@ -101,38 +95,24 @@ async function run() {
             console.log(quantity);
             const result = await productCollection.updateOne({ _id: ObjectId(id) }, { $set: { qty: quantity } });
             res.send(result);
-
-          
         })
-        app.put('/api/product/stock/:id', async(req,res)=>{
-            const id =req.params.id;
+        app.put('/api/product/stock/:id', async (req, res) => {
+            const id = req.params.id;
             const quantity = req.body.qty.qty;
-            console.log( quantity);
-            const product = await productCollection.findOne({_id: ObjectId(id)});
+            console.log(quantity);
+            const product = await productCollection.findOne({ _id: ObjectId(id) });
             console.log(product);
-            if(product){
-                if(product.qty == null){
-                    product.qty =0 ;
+            if (product) {
+                if (product.qty == null) {
+                    product.qty = 0;
                 }
-                const qty =parseInt(product.qty) + parseInt(quantity);
+                const qty = parseInt(product.qty) + parseInt(quantity);
                 const result = await productCollection.updateOne({ _id: ObjectId(id) }, { $set: { qty: qty } });
                 res.send(result)
             }
+     })
 
-        
-        })
-        // app.put('/api/product/stock/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const quantity = req.body.qty;
-        //     const product = await productCollection.findOne({ _id: ObjectId(id) });
-        //     if (product) {
-        //         const quantity = parseInt(product.qty) + parseInt( quantity);
-        //         res.send(quantity)
-
-        
-
-
-    } finally {
+ } finally {
 
     }
 
@@ -142,8 +122,6 @@ run().catch(console.dir)
 
 
 // middleware
-
-
 app.get('/', (req, res) => {
     res.send("fdff")
 })
