@@ -123,7 +123,7 @@ run().catch(console.dir)
 
 // middleware
 app.get('/', (req, res) => {
-    res.send("fdff")
+    res.send("Running Product server")
 })
 
 
