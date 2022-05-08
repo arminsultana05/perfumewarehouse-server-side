@@ -6,7 +6,14 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
 const port = process.env.PORT || 5000
 const app = express();
-app.use(cors());
+// app.use(cors());
+const corsConfig = {
+    origin: true,
+    credentials: true,
+    }
+    app.use(cors(corsConfig))
+    app.options('*', cors(corsConfig))
+
 app.use(express.json());
 function verifyJWT(req, res, next) {
     const headerAuth = req.headers.authorization;
